@@ -5,7 +5,7 @@ from openpyxl.drawing.spreadsheet_drawing import OneCellAnchor, AnchorMarker
 from openpyxl.drawing.xdr import XDRPoint2D, XDRPositiveSize2D
 from openpyxl.utils.units import pixels_to_EMU, cm_to_EMU
 import os
-import win32com.client as win32
+#import win32com.client as win32
 from openpyxl.utils import range_boundaries
 import xlsxwriter
 import openpyxl as px
