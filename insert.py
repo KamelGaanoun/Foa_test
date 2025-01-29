@@ -326,7 +326,8 @@ def foa_feeder(db, template_file, pil_images,output_dr):
     with zipfile.ZipFile(zip_filename, "w") as zipf:
         for file in os.listdir(output_dr):
             file_path = os.path.join(output_dr, file)
-            zipf.write(file_path, os.path.basename(file_path))  # Add each file to ZIP
+            if file != "outputs.zip":
+                zipf.write(file_path, os.path.basename(file_path))  # Add only valid files
 
     # Provide a download button for the ZIP file
     with open(zip_filename, "rb") as zipf:
@@ -336,6 +337,7 @@ def foa_feeder(db, template_file, pil_images,output_dr):
             file_name="outputs.zip",
             mime="application/zip"
         )
+
     st.info("Vos fichiers sont prêts!")
 
 
