@@ -10,6 +10,7 @@ from openpyxl.utils import range_boundaries
 import xlsxwriter
 import openpyxl as px
 import streamlit as st
+import zipfile
 
 # # Paths to the files
 # image_path = "D:\Kamel\IA_Projects\FOA_Builder\saved_images\AXTD_FI-48092-0005_PA-48092-000C_MADSITE/image_214_0_CH_FT_341_L1T.png"  # Path to the saved image
@@ -318,6 +319,23 @@ def foa_feeder(db, template_file, pil_images,output_dr):
         except Exception as e:
             print(f"Error deleting file {temp_image_path}: {e}")
 
+
+    # Create a ZIP file containing all output Excel files
+    zip_filename = os.path.join(output_dr, "outputs.zip")
+
+    with zipfile.ZipFile(zip_filename, "w") as zipf:
+        for file in os.listdir(output_dr):
+            file_path = os.path.join(output_dr, file)
+            zipf.write(file_path, os.path.basename(file_path))  # Add each file to ZIP
+
+    # Provide a download button for the ZIP file
+    with open(zip_filename, "rb") as zipf:
+        st.download_button(
+            label="📥 Téléchargez vos fichiers",
+            data=zipf,
+            file_name="outputs.zip",
+            mime="application/zip"
+        )
     st.info("Vos fichiers sont prêts!")
 
 

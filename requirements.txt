@@ -3,3 +3,4 @@ Pillow==9.4.0
 streamlit==1.41.1
 streamlit_toggle_switch==1.0.2
 XlsxWriter==3.2.0
+zipfile36==0.1.3
