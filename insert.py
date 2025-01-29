@@ -238,7 +238,8 @@ def foa_feeder(db, template_file, pil_images,output_dr):
             current_pil_images = [pil_images[id] for id in image_ids]
 
             # Unique output file and temp image path
-            output_file = f"{output_dr}\{img_chambre}_C16_updated.xlsx"
+            #output_file = f"{output_dr}\{img_chambre}_C16_updated.xlsx"
+            output_file = os.path.join(output_dr, f"{img_chambre}_C16_updated.xlsx") #to work in any OS
 
             # Insert each image based on predefined positions and sizes
             for idx, pil_image in enumerate(current_pil_images):
