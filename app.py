@@ -246,13 +246,21 @@ def main():
 
                             if os.path.exists(zip_file_path):
                                 with open(zip_file_path, "rb") as zipf:
+                                    zip_data = zipf.read()  # Read the file before passing it to the button
+                                    
                                     st.download_button(
                                         label="📥 Téléchargez vos fichiers",
-                                        data=zipf,
+                                        data=zip_data,  # Pass the file content, not the open file
                                         file_name=os.path.basename(zip_file_path),
-                                        mime="application/zip"
+                                        mime="application/zip",
+                                        key="download_zip"  # Unique key to prevent disappearance
                                     )
-                                #st.success("✅ Vos fichiers sont prêts! Téléchargez-les en cliquant ci-dessus.")
+
+                                # Ensure the button remains visible after first display
+                                st.session_state["show_download"] = True
+
+                            if st.session_state.get("show_download", False):
+                                st.success("✅ Vos fichiers sont prêts! Cliquez ci-dessus pour télécharger.")
                     except Exception as e:
                         st.error(f"An error occurred while processing the file: {e}")
             

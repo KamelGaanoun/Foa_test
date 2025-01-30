@@ -339,9 +339,10 @@ def foa_feeder(db, template_file, pil_images,output_dr):
             if file.endswith(".xlsx") and os.path.getsize(file_path) > 0:
                 zipf.write(file_path, os.path.basename(file_path))  # Add only valid files
 
-    # Store ZIP path in session state
-    st.session_state["zip_file_path"] = zip_filename
-    st.session_state["zip_ready"] = True  # Mark ZIP as ready
+    # Ensure the ZIP file is completely written
+    if os.path.exists(zip_filename):
+        st.session_state["zip_file_path"] = zip_filename  # Store ZIP path
+        st.session_state["zip_ready"] = True  # Mark ZIP as ready
 
     # # Provide a download button for the ZIP file
     # with open(zip_filename, "rb") as zipf:
@@ -354,7 +355,7 @@ def foa_feeder(db, template_file, pil_images,output_dr):
 
     
 
-    st.info("Vos fichiers sont prêts!")
+    #st.info("Vos fichiers sont prêts!")
 
 
 
