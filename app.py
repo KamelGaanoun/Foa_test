@@ -238,8 +238,8 @@ def main():
                             #st.write(f"Image at Row: {row}, Column: {col}")
                             #st.image(pil_image)
                         
-                        foa_feeder(new_db,"00_C16.xlsx",image_memory,outputs_directory)
-                
+                        #foa_feeder(new_db,"00_C16.xlsx",image_memory,outputs_directory)#desktop
+                        foa_feeder(new_db,"00_C16.xlsx",image_memory,base_filename)#web
                     except Exception as e:
                         st.error(f"An error occurred while processing the file: {e}")
             
