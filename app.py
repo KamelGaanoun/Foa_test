@@ -259,8 +259,8 @@ def main():
                                 # Ensure the button remains visible after first display
                                 st.session_state["show_download"] = True
 
-                            if st.session_state.get("show_download", False):
-                                st.success("✅ Vos fichiers sont prêts! Cliquez ci-dessus pour télécharger.")
+                            # if st.session_state.get("show_download", False):
+                            #     st.success("✅ Vos fichiers sont prêts! Cliquez ci-dessus pour télécharger.")
                     except Exception as e:
                         st.error(f"An error occurred while processing the file: {e}")
             
