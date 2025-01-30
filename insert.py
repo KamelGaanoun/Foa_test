@@ -336,14 +336,19 @@ def foa_feeder(db, template_file, pil_images,output_dr):
             if file != f"{output_dr}.zip":
                 zipf.write(file_path, os.path.basename(file_path))  # Add only valid files
 
-    # Provide a download button for the ZIP file
-    with open(zip_filename, "rb") as zipf:
-        st.download_button(
-            label="📥 Téléchargez vos fichiers",
-            data=zipf,
-            file_name=f"{output_dr}.zip",
-            mime="application/zip"
-        )
+
+    # Store the ZIP file path in session state before returning
+    st.session_state["zip_file_path"] = zip_filename
+    st.session_state["zip_ready"] = True  # Flag to indicate ZIP is ready
+    
+    # # Provide a download button for the ZIP file
+    # with open(zip_filename, "rb") as zipf:
+    #     st.download_button(
+    #         label="📥 Téléchargez vos fichiers",
+    #         data=zipf,
+    #         file_name=f"{output_dr}.zip",
+    #         mime="application/zip"
+    #     )
 
     st.info("Vos fichiers sont prêts!")
 
