@@ -181,7 +181,7 @@ import zipfile
 
 
 
-def foa_feeder(db, template_file, pil_images,output_dr):
+def foa_feeder(db, template_file,command, pil_images,output_dr):
     
     target_sheet_name = "CH"  # Name of the target sheet
 
@@ -223,6 +223,7 @@ def foa_feeder(db, template_file, pil_images,output_dr):
             images = entry['images']
 
             # Insert values into specific cells
+            sheet["E2"]=command
             sheet["T2"] = img_chambre      
             sheet["Y2"] = img_planche          
             sheet["AD2"] = img_type    

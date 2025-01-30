@@ -55,8 +55,8 @@ def main():
          #on the menu, which is not surely the good one)
         sheet_options = [""] + sheet_names  # Prepend an empty choice
 
-
-                
+        #Get nmero commande
+        command_num=st.text_input("Merci de renseigner le numéro de commande")        
         # Step 2: Prompt for the sheet name and provide a button to process
         sheet_name = st.selectbox("Veuillez sélectionner la feuille contenant les photos puis cliquez sur Traiter", sheet_options)
         process_button = st.button("Traiter")
@@ -239,7 +239,7 @@ def main():
                             #st.image(pil_image)
                         
                         #foa_feeder(new_db,"00_C16.xlsx",image_memory,outputs_directory)#desktop
-                        foa_feeder(new_db,"00_C16.xlsx",image_memory,base_filename)#web
+                        foa_feeder(new_db,"00_C16.xlsx",command_num,image_memory,base_filename)#web
                         
                         if "zip_ready" in st.session_state and st.session_state["zip_ready"]:
                             zip_file_path = st.session_state["zip_file_path"]
