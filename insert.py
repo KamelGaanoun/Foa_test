@@ -340,7 +340,7 @@ def foa_feeder(db, template_file, pil_images,output_dr):
     # Store the ZIP file path in session state before returning
     st.session_state["zip_file_path"] = zip_filename
     st.session_state["zip_ready"] = True  # Flag to indicate ZIP is ready
-    
+
     # # Provide a download button for the ZIP file
     # with open(zip_filename, "rb") as zipf:
     #     st.download_button(
@@ -349,6 +349,26 @@ def foa_feeder(db, template_file, pil_images,output_dr):
     #         file_name=f"{output_dr}.zip",
     #         mime="application/zip"
     #     )
+
+    # Show the download button after foa_feeder runs
+    if "zip_ready" in st.session_state and st.session_state["zip_ready"]:
+        zip_file_path = st.session_state["zip_file_path"]
+
+        if os.path.exists(zip_file_path):
+            with open(zip_file_path, "rb") as zipf:
+                st.download_button(
+                    label="📥 Téléchargez vos fichiers",
+                    data=zipf,
+                    file_name=os.path.basename(zip_file_path),
+                    mime="application/zip",
+                    key="download_zip"  # Ensures the button stays unique
+                )
+            # Keep the download button visible by preventing reruns
+            st.session_state["show_download"] = True
+    
+    if st.session_state.get("show_download", False):
+        st.success("✅ Vos fichiers sont prêts! Cliquez ci-dessus pour télécharger.")
+
 
     st.info("Vos fichiers sont prêts!")
 

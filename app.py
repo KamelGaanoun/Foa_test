@@ -240,26 +240,6 @@ def main():
                         
                         #foa_feeder(new_db,"00_C16.xlsx",image_memory,outputs_directory)#desktop
                         foa_feeder(new_db,"00_C16.xlsx",image_memory,base_filename)#web
-                        # Show the download button after foa_feeder runs
-                        if "zip_ready" in st.session_state and st.session_state["zip_ready"]:
-                            zip_file_path = st.session_state["zip_file_path"]
-
-                            if os.path.exists(zip_file_path):
-                                with open(zip_file_path, "rb") as zipf:
-                                    st.download_button(
-                                        label="📥 Téléchargez vos fichiers",
-                                        data=zipf,
-                                        file_name=os.path.basename(zip_file_path),
-                                        mime="application/zip",
-                                        key="download_zip"  # Ensures the button stays unique
-                                    )
-                                # Keep the download button visible by preventing reruns
-                                st.session_state["show_download"] = True
-                        
-                        if st.session_state.get("show_download", False):
-                            st.success("✅ Vos fichiers sont prêts! Cliquez ci-dessus pour télécharger.")
-
-
                     
                     except Exception as e:
                         st.error(f"An error occurred while processing the file: {e}")
