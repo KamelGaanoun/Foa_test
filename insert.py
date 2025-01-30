@@ -322,12 +322,12 @@ def foa_feeder(db, template_file, pil_images,output_dr):
 
 
     # Create a ZIP file containing all output Excel files
-    zip_filename = os.path.join(output_dr, f"{output_dr}.zip")
+    zip_filename = f"{output_dr}.zip"
 
     with zipfile.ZipFile(zip_filename, "w") as zipf:
         for file in os.listdir(output_dr):
             file_path = os.path.join(output_dr, file)
-            if file != "outputs.zip":
+            if file != f"{output_dr}.zip":
                 zipf.write(file_path, os.path.basename(file_path))  # Add only valid files
 
     # Provide a download button for the ZIP file
