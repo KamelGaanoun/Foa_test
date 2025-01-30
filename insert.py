@@ -237,9 +237,14 @@ def foa_feeder(db, template_file, pil_images,output_dr):
             # Get the actual PIL images
             current_pil_images = [pil_images[id] for id in image_ids]
 
+             #Add this if Web app
+            outputs_directory = os.path.join("Outputs", output_dr)
+
             # Unique output file and temp image path
+            
             #output_file = f"{output_dr}\{img_chambre}_C16_updated.xlsx"
-            output_file = os.path.join(output_dr, f"{img_chambre}_C16.xlsx") #to work in any OS
+            #output_file = os.path.join(outputs_directory, f"{img_chambre}_C16.xlsx") #Desktop
+            output_file = os.path.join(outputs_directory, f"{img_chambre}_C16.xlsx") #to work in any OS
 
             # Insert each image based on predefined positions and sizes
             for idx, pil_image in enumerate(current_pil_images):
@@ -321,8 +326,7 @@ def foa_feeder(db, template_file, pil_images,output_dr):
             print(f"Error deleting file {temp_image_path}: {e}")
 
 
-    #Add this if Web app
-    outputs_directory = os.path.join("Outputs", output_dr)
+   
     # Create a ZIP file containing all output Excel files
     zip_filename = f"{output_dr}.zip"
 
