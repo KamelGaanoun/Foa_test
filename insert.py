@@ -239,7 +239,7 @@ def foa_feeder(db, template_file, pil_images,output_dr):
 
             # Unique output file and temp image path
             #output_file = f"{output_dr}\{img_chambre}_C16_updated.xlsx"
-            output_file = os.path.join(output_dr, f"{img_chambre}_C16_updated.xlsx") #to work in any OS
+            output_file = os.path.join(output_dr, f"{img_chambre}_C16.xlsx") #to work in any OS
 
             # Insert each image based on predefined positions and sizes
             for idx, pil_image in enumerate(current_pil_images):
@@ -322,7 +322,7 @@ def foa_feeder(db, template_file, pil_images,output_dr):
 
 
     # Create a ZIP file containing all output Excel files
-    zip_filename = os.path.join(output_dr, "outputs.zip")
+    zip_filename = os.path.join(output_dr, f"{output_dr}.zip")
 
     with zipfile.ZipFile(zip_filename, "w") as zipf:
         for file in os.listdir(output_dr):
@@ -335,7 +335,7 @@ def foa_feeder(db, template_file, pil_images,output_dr):
         st.download_button(
             label="📥 Téléchargez vos fichiers",
             data=zipf,
-            file_name="outputs.zip",
+            file_name=f"{output_dr}.zip",
             mime="application/zip"
         )
 
