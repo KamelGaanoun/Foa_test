@@ -252,7 +252,7 @@ def main():
                                         file_name=os.path.basename(zip_file_path),
                                         mime="application/zip"
                                     )
-                                st.success("✅ Vos fichiers sont prêts! Téléchargez-les en cliquant ci-dessus.")
+                                #st.success("✅ Vos fichiers sont prêts! Téléchargez-les en cliquant ci-dessus.")
                     except Exception as e:
                         st.error(f"An error occurred while processing the file: {e}")
             
