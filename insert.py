@@ -206,13 +206,19 @@ def foa_feeder(db, template_file,command, pil_images,output_dr):
     temp_image_paths = []
     for entry in db:
         try:
+            
+
+            img_emplcmnt = entry['metadata']['Emplacement']
+            if img_emplcmnt != "CHAMBRE FTTH":
+                continue  
+            
             # Reload the workbook from the template for each entry
             wb = load_workbook(filename=template_file)
             if target_sheet_name not in wb.sheetnames:
                 raise ValueError(f"Sheet '{target_sheet_name}' not found in the workbook.")
 
             sheet = wb[target_sheet_name]
-
+            
             # Extract metadata
             img_planche = entry['metadata']['planche']
             img_address = entry['metadata']['Adresse']
@@ -238,7 +244,7 @@ def foa_feeder(db, template_file,command, pil_images,output_dr):
             # Get the actual PIL images
             current_pil_images = [pil_images[id] for id in image_ids]
 
-             #Add this if Web app
+            #Add this if Web app
             outputs_directory = os.path.join("Outputs", output_dr)
 
             # Unique output file and temp image path
