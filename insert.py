@@ -328,18 +328,20 @@ def foa_feeder(db, template_file, pil_images,output_dr):
 
    
     # Create a ZIP file containing all output Excel files
-    zip_filename = f"{output_dr}.zip"
+    #zip_filename = f"{output_dr}.zip"
 
+    zip_filename = os.path.join("/tmp", f"{os.path.basename(output_dr)}.zip")
+
+    # Create the ZIP file
     with zipfile.ZipFile(zip_filename, "w") as zipf:
-        for file in os.listdir(outputs_directory):
-            file_path = os.path.join(outputs_directory, file)
-            if file != f"{output_dr}.zip":
+        for file in os.listdir(output_dr):
+            file_path = os.path.join(output_dr, file)
+            if file.endswith(".xlsx") and os.path.getsize(file_path) > 0:
                 zipf.write(file_path, os.path.basename(file_path))  # Add only valid files
 
-
-    # Store the ZIP file path in session state before returning
+    # Store ZIP path in session state
     st.session_state["zip_file_path"] = zip_filename
-    st.session_state["zip_ready"] = True  # Flag to indicate ZIP is ready
+    st.session_state["zip_ready"] = True  # Mark ZIP as ready
 
     # # Provide a download button for the ZIP file
     # with open(zip_filename, "rb") as zipf:
@@ -350,25 +352,7 @@ def foa_feeder(db, template_file, pil_images,output_dr):
     #         mime="application/zip"
     #     )
 
-    # Show the download button after foa_feeder runs
-    if "zip_ready" in st.session_state and st.session_state["zip_ready"]:
-        zip_file_path = st.session_state["zip_file_path"]
-
-        if os.path.exists(zip_file_path):
-            with open(zip_file_path, "rb") as zipf:
-                st.download_button(
-                    label="📥 Téléchargez vos fichiers",
-                    data=zipf,
-                    file_name=os.path.basename(zip_file_path),
-                    mime="application/zip",
-                    key="download_zip"  # Ensures the button stays unique
-                )
-            # Keep the download button visible by preventing reruns
-            st.session_state["show_download"] = True
     
-    if st.session_state.get("show_download", False):
-        st.success("✅ Vos fichiers sont prêts! Cliquez ci-dessus pour télécharger.")
-
 
     st.info("Vos fichiers sont prêts!")
 
