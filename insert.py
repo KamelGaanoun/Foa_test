@@ -320,13 +320,15 @@ def foa_feeder(db, template_file, pil_images,output_dr):
         except Exception as e:
             print(f"Error deleting file {temp_image_path}: {e}")
 
+
+    #Add this if Web app
     outputs_directory = os.path.join("Outputs", output_dr)
     # Create a ZIP file containing all output Excel files
     zip_filename = f"{output_dr}.zip"
 
     with zipfile.ZipFile(zip_filename, "w") as zipf:
         for file in os.listdir(outputs_directory):
-            file_path = os.path.join(output_dr, file)
+            file_path = os.path.join(outputs_directory, file)
             if file != f"{output_dr}.zip":
                 zipf.write(file_path, os.path.basename(file_path))  # Add only valid files
 
