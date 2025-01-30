@@ -334,8 +334,8 @@ def foa_feeder(db, template_file, pil_images,output_dr):
 
     # Create the ZIP file
     with zipfile.ZipFile(zip_filename, "w") as zipf:
-        for file in os.listdir(output_dr):
-            file_path = os.path.join(output_dr, file)
+        for file in os.listdir(outputs_directory):
+            file_path = os.path.join(outputs_directory, file)
             if file.endswith(".xlsx") and os.path.getsize(file_path) > 0:
                 zipf.write(file_path, os.path.basename(file_path))  # Add only valid files
 
