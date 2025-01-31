@@ -1,4 +1,4 @@
-upload_style="""
+upload_style = """
 <style>
 /* Customize the drag-and-drop instructions */
 [data-testid='stFileUploaderDropzoneInstructions'] > div > span {
@@ -10,10 +10,34 @@ upload_style="""
     display: block;
 }
 
+/* Change the background color of the file uploader */
+[data-testid='stFileUploader'] div[role='presentation'] {
+    background-color: #ff8c00 !important; /* Orange background */
+    border-radius: 10px !important; /* Smooth edges */
+    padding: 15px !important;
+    color: white !important; /* White text */
+    border: 2px solid #e07b00 !important; /* Slight darker border */
+}
+
+/* Change text color inside uploader */
+[data-testid='stFileUploaderDropzone'] {
+    color: white !important;
+    background-color: #ff8c00 !important;
+}
+
 /* Target only the "Browse" button of the file uploader */
 [data-testid='stFileUploader'] button[data-testid='stBaseButton-secondary'] {
     text-indent: -9999px;
     line-height: 0;
+    background-color: #ff6600 !important; /* Slightly darker orange for contrast */
+    color: white !important;
+    border: none !important;
+}
+
+/* Change the color of the icon inside the button by targeting the parent button */
+[data-testid='stFileUploader'] button[data-testid='stBaseButton-secondary'] svg {
+    fill: white !important; /* Ensure icon color changes */
+    color: white !important; /* Override any inherited color */
 }
 [data-testid='stFileUploader'] button[data-testid='stBaseButton-secondary']::after {
     line-height: initial;
@@ -31,9 +55,12 @@ upload_style="""
     content: "Limite 200MB par fichier";
     visibility: visible;
     display: block;
+    color: #f5f5f5 !important;
 }
 </style>
 """
+
+
 
 toggle_switch="""
 <style>
