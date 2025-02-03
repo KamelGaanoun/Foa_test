@@ -412,11 +412,13 @@ def main():
                             
                             # Provide a download button
                             st.download_button(
-                                label="Téléchargez vos photos!",
+                                label="📥 Téléchargez vos photos!",
                                 data=zip_buffer,
                                 file_name=f"{base_filename}.zip",
                                 mime="application/zip"
                             )
+
+
 
 
 
