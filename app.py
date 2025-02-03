@@ -405,16 +405,16 @@ def main():
                             
                             
                             # Streamlit app
-                            st.title("Download Images as ZIP")
+                            st.title("Téléchargez vos photos!")
 
                             # Save images to a ZIP file
                             zip_buffer = save_images_to_zip(flattened_images, flattened_texts)
                             
                             # Provide a download button
                             st.download_button(
-                                label="Download Images as ZIP",
+                                label="Téléchargez vos photos!",
                                 data=zip_buffer,
-                                file_name="images.zip",
+                                file_name=f"{base_filename}.zip",
                                 mime="application/zip"
                             )
 
