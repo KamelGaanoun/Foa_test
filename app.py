@@ -405,7 +405,7 @@ def main():
                             
                             
                             # Streamlit app
-                            st.title("Téléchargez vos photos!")
+                            #st.title("Téléchargez vos photos!")
 
                             # Save images to a ZIP file
                             zip_buffer = save_images_to_zip(flattened_images, flattened_texts)
