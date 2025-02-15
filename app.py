@@ -3,6 +3,7 @@ import streamlit as st
 import  streamlit_toggle as tog
 from streamlit_option_menu import option_menu
 import openpyxl as px
+from C6_insert import extract_photo_names_from_excel, filter_photo_names, find_matching_photos,process_excel
 from htmlTemplates import css,upload_style
 from io import BytesIO
 from openpyxl.drawing.image import Image
@@ -17,6 +18,7 @@ from uploading import upload_files
 from regEx import get_planche_number,process_text
 from insert import foa_feeder
 from C6allignment import extract_images,extract_texts,allign_images,flatten_images,flatten_texts, save_images_to_zip
+import tempfile
 
 
 
@@ -336,94 +338,160 @@ def main():
     
     
     elif app == "Annexe C6":
-        st.markdown(f'<h1 style="color:#ffa500;font-size:44px;">{"Annexe C6"}</h1>', unsafe_allow_html=True)
 
-        # Inject the custom CSS to override Streamlit file uploader
-        st.markdown(upload_style,unsafe_allow_html=True,)
-        st.write(css, unsafe_allow_html=True)
-        #Uploading the file
-        uploaded_filesC6=upload_files(type="xlsx",multiple=False)
+         # Create Tabs for Extraction and Insertion
+        extra_tab,inser_tab= st.tabs(["🔍 Extraction", "📝 Insertion"])
 
-        if uploaded_filesC6:
-            #Gettin workbook from the session, otherwise st keeps refreshing and reload 
-            #the wb each time it refreshes, and decreases user exp quality
-            if "workbookC6" not in st.session_state:
-                with st.spinner("Lecture et validation du fichier..."):
-                    wbC6 = load_excel_file(uploaded_filesC6,read_only=True)  # Load the Excel file
-                    st.session_state.workbookC6 = wbC6  # Store the workbook in session state
-                    st.session_state.sheet_names = wbC6.sheetnames  # Store sheet names
+        with extra_tab:
+            st.subheader("🔍 Extraction Module")
+        
 
-            # Access stored workbook and sheet names
-            wbC6 = st.session_state.workbookC6
-            sheet_names = st.session_state.sheet_names
+            #st.markdown(f'<h1 style="color:#ffa500;font-size:44px;">{"Annexe C6"}</h1>', unsafe_allow_html=True)
 
-            # Add an empty default choice (So the user is encouraged to correctly choose
-            #the correct sheet name, otherwise maybe he will inadvertly let the first option
-            #on the menu, which is not surely the good one)
-            sheet_options = [""] + sheet_names  # Prepend an empty choice
+            # Inject the custom CSS to override Streamlit file uploader
+            st.markdown(upload_style,unsafe_allow_html=True,)
+            st.write(css, unsafe_allow_html=True)
+            #Uploading the file
+            uploaded_filesC6=upload_files(type="xlsx",multiple=False)
 
-            #Get nmero commande
-            #command_num=st.text_input("Merci de renseigner le numéro de commande")        
             
+
+            if uploaded_filesC6:
+                #Gettin workbook from the session, otherwise st keeps refreshing and reload 
+                #the wb each time it refreshes, and decreases user exp quality
+                if "workbookC6" not in st.session_state:
+                    with st.spinner("Lecture et validation du fichier..."):
+                        wbC6 = load_excel_file(uploaded_filesC6,read_only=True)  # Load the Excel file
+                        st.session_state.workbookC6 = wbC6  # Store the workbook in session state
+                        st.session_state.sheet_names = wbC6.sheetnames  # Store sheet names
+
+                # Access stored workbook and sheet names
+                wbC6 = st.session_state.workbookC6
+                sheet_names = st.session_state.sheet_names
+
+                # Add an empty default choice (So the user is encouraged to correctly choose
+                #the correct sheet name, otherwise maybe he will inadvertly let the first option
+                #on the menu, which is not surely the good one)
+                sheet_options = [""] + sheet_names  # Prepend an empty choice
+
+                #Get nmero commande
+                #command_num=st.text_input("Merci de renseigner le numéro de commande")        
+                
+                
+                # Step 2: Prompt for the sheet name and provide a button to process
+                sheet_name = st.selectbox("Veuillez sélectionner la feuille contenant les photos puis cliquez sur Traiter", sheet_options)
+                process_button = st.button("Traiter")
+
+                wbC6.close()  # Close the workbook to free up memory
+
+                #What happens when "Traiter" is clicked
+                if process_button:
+                    # Check if the user has selected a valid sheet name
+                    if sheet_name == "":
+                        st.warning("Veuillez sélectionner une feuille avant de continuer.")
+                    else:
+                        with st.spinner("Traitement en cours..."):
+                            try:
+                                wbC6 = load_excel_file(uploaded_filesC6,read_only=False)
+                                #get the selected sheet
+                                sheet = wbC6[sheet_name]
+
+                                # Store PIL images in memory
+                                pil_images_in_memory = []
+
+                                # Create a directory with the same name as the uploaded file (without the extension)
+                                base_filename = os.path.splitext(uploaded_filesC6.name)[0]  # Remove .xlsx extension
+                                save_directory = os.path.join("Images", base_filename)
+                                outputs_directory = os.path.join("Outputs", base_filename)
+                                for directory in [save_directory, outputs_directory]:
+                                    os.makedirs(directory, exist_ok=True)
+
+                                images_by_row=extract_images(sheet)
+                                texts_by_row=extract_texts(sheet)
+                                
+                                images_by_row=allign_images(images_by_row,sheet)
+                                
+
+                                flattened_images=flatten_images(images_by_row)
+                                flattened_texts=flatten_texts(texts_by_row)                  
+                                
+                                
+                                # Streamlit app
+                                #st.title("Téléchargez vos photos!")
+
+                                # Save images to a ZIP file
+                                zip_buffer = save_images_to_zip(flattened_images, flattened_texts)
+                                
+                                # Provide a download button
+                                st.download_button(
+                                    label="📥 Téléchargez vos photos!",
+                                    data=zip_buffer,
+                                    file_name=f"{base_filename}.zip",
+                                    mime="application/zip"
+                                )
+
+
+
+
+
+                            except Exception as e:
+                                    st.error(f"An error occurred while processing the file: {e}")
+
+
+        with inser_tab:
+            st.subheader("📝 Insertion Module")
             
-            # Step 2: Prompt for the sheet name and provide a button to process
-            sheet_name = st.selectbox("Veuillez sélectionner la feuille contenant les photos puis cliquez sur Traiter", sheet_options)
-            process_button = st.button("Traiter")
+            # Step 2: User uploads the Excel file
+            uploaded_file = st.file_uploader("Téléchargez le fichier Excel", type=["xlsx"])
 
-            wbC6.close()  # Close the workbook to free up memory
+            # Step 2: Upload multiple images
+            uploaded_photos = st.file_uploader("📸 Chargez les photos associées", type=["png", "jpg", "jpeg"], accept_multiple_files=True)
+            if uploaded_file and uploaded_photos:
+                # Step 2: Get the directory where the uploaded file is stored
+                # file_name = uploaded_file.name  # Get the uploaded file's name
+                # abs_path=os.path.abspath(file_name)
+                # base_folder =  os.path.dirname(abs_path) # get folder path
+                # folder_path = os.path.join("Photos", base_folder)  # append Photos
+                # Step 1: Save the uploaded file to a temporary location
+                # Step 1: Get the name of the uploaded file (only the filename, no path)
+                
 
-            #What happens when "Traiter" is clicked
-            if process_button:
-                # Check if the user has selected a valid sheet name
-                if sheet_name == "":
-                    st.warning("Veuillez sélectionner une feuille avant de continuer.")
-                else:
-                    with st.spinner("Traitement en cours..."):
-                        try:
-                            wbC6 = load_excel_file(uploaded_filesC6,read_only=False)
-                            #get the selected sheet
-                            sheet = wbC6[sheet_name]
+                with st.spinner("Analyse du fichier Excel..."):
+                    # Step 3: Extract photo names from Excel
+                    photo_names = extract_photo_names_from_excel(uploaded_file)
 
-                            # Store PIL images in memory
-                            pil_images_in_memory = []
+                    # Step 4: Filter photo names based on rules
+                    filtered_names = filter_photo_names(photo_names)
 
-                            # Create a directory with the same name as the uploaded file (without the extension)
-                            base_filename = os.path.splitext(uploaded_filesC6.name)[0]  # Remove .xlsx extension
-                            save_directory = os.path.join("Images", base_filename)
-                            outputs_directory = os.path.join("Outputs", base_filename)
-                            for directory in [save_directory, outputs_directory]:
-                                os.makedirs(directory, exist_ok=True)
+                    # Step 5: Find matching photos in the folder
+                    selected_photos = find_matching_photos(uploaded_photos, filtered_names)
 
-                            images_by_row=extract_images(sheet)
-                            texts_by_row=extract_texts(sheet)
-                            
-                            images_by_row=allign_images(images_by_row,sheet)
-                            
+                # Step 6: Display results
+                st.success(f"{len(selected_photos)} photos sélectionnées!")
 
-                            flattened_images=flatten_images(images_by_row)
-                            flattened_texts=flatten_texts(texts_by_row)                  
-                            
-                            
-                            # Streamlit app
-                            #st.title("Téléchargez vos photos!")
+                with open("temp.xlsx", "wb") as f:
+                    f.write(uploaded_file.getbuffer())
 
-                            # Save images to a ZIP file
-                            zip_buffer = save_images_to_zip(flattened_images, flattened_texts)
-                            
-                            # Provide a download button
-                            st.download_button(
-                                label="📥 Téléchargez vos photos!",
-                                data=zip_buffer,
-                                file_name=f"{base_filename}.zip",
-                                mime="application/zip"
-                            )
+                with st.spinner("Traitement en cours..."):
+                # Process the Excel file
+                    process_excel("temp.xlsx",selected_photos)
 
+                # Provide a download link for the updated file
+                with open("temp.xlsx", "rb") as f:
+                    st.download_button(
+                        label="Download Updated Excel File",
+                        data=f,
+                        file_name="updated_file.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    )
 
-
-
-
-                        except Exception as e:
-                                st.error(f"An error occurred while processing the file: {e}")
+                # Show images
+                # for photo in selected_photos:
+                #     try:
+                #         img = PILImage.open(photo)
+                #         st.image(img, caption=photo.name, use_column_width=True)
+                #     except Exception as e:
+                #         st.error(f"❌ Impossible d'afficher {photo.name}: {e}")
 
 
     
