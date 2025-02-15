@@ -23,9 +23,7 @@ def extract_photo_names_from_excel(excel_file):
 
     return photo_names
 
-photo_names=extract_photo_names_from_excel("D:\Kamel\IA_Projects\FOA_Builder\F97445300424_C6.xlsx")
 
-len(photo_names)
 
 def filter_photo_names(photo_names):
     """Filters the photo names according to the rule: if _3 and _4 exist, ignore all 4."""
@@ -47,8 +45,6 @@ def filter_photo_names(photo_names):
     return filtered_names
 
 
-filtered_names=filter_photo_names(photo_names)
-len(filtered_names)
 
 def find_matching_photos(uploaded_photos, filtered_names):
     """Finds photos in the given folder that match filtered names and end with _3 or _4."""
