@@ -3,6 +3,7 @@ import streamlit as st
 import  streamlit_toggle as tog
 from streamlit_option_menu import option_menu
 import openpyxl as px
+from C6_extract import extract_images_with_correct_names
 from C6_insert import extract_photo_names_from_excel, filter_photo_names, find_matching_photos,process_excel
 from htmlTemplates import css,upload_style
 from io import BytesIO
@@ -351,13 +352,15 @@ def main():
             # Inject the custom CSS to override Streamlit file uploader
             st.markdown(upload_style,unsafe_allow_html=True,)
             st.write(css, unsafe_allow_html=True)
+
+
             #Uploading the file
             uploaded_filesC6=upload_files(type="xlsx",multiple=False)
 
             
 
             if uploaded_filesC6:
-                #Gettin workbook from the session, otherwise st keeps refreshing and reload 
+                #Getting workbook from the session, otherwise st keeps refreshing and reload 
                 #the wb each time it refreshes, and decreases user exp quality
                 if "workbookC6" not in st.session_state:
                     with st.spinner("Lecture et validation du fichier..."):
@@ -368,6 +371,9 @@ def main():
                 # Access stored workbook and sheet names
                 wbC6 = st.session_state.workbookC6
                 sheet_names = st.session_state.sheet_names
+
+
+                base_filename = os.path.splitext(uploaded_filesC6.name)[0]
 
                 # Add an empty default choice (So the user is encouraged to correctly choose
                 #the correct sheet name, otherwise maybe he will inadvertly let the first option
@@ -392,44 +398,18 @@ def main():
                     else:
                         with st.spinner("Traitement en cours..."):
                             try:
-                                wbC6 = load_excel_file(uploaded_filesC6,read_only=False)
-                                #get the selected sheet
-                                sheet = wbC6[sheet_name]
-
-                                # Store PIL images in memory
-                                pil_images_in_memory = []
-
-                                # Create a directory with the same name as the uploaded file (without the extension)
-                                base_filename = os.path.splitext(uploaded_filesC6.name)[0]  # Remove .xlsx extension
-                                save_directory = os.path.join("Images", base_filename)
-                                outputs_directory = os.path.join("Outputs", base_filename)
-                                for directory in [save_directory, outputs_directory]:
-                                    os.makedirs(directory, exist_ok=True)
-
-                                images_by_row=extract_images(sheet)
-                                texts_by_row=extract_texts(sheet)
-                                
-                                images_by_row=allign_images(images_by_row,sheet)
-                                
-
-                                flattened_images=flatten_images(images_by_row)
-                                flattened_texts=flatten_texts(texts_by_row)                  
                                 
                                 
-                                # Streamlit app
-                                #st.title("Téléchargez vos photos!")
+                                zip_filename = extract_images_with_correct_names(uploaded_filesC6, base_filename)
 
-                                # Save images to a ZIP file
-                                zip_buffer = save_images_to_zip(flattened_images, flattened_texts)
-                                
-                                # Provide a download button
-                                st.download_button(
-                                    label="📥 Téléchargez vos photos!",
-                                    data=zip_buffer,
-                                    file_name=f"{base_filename}.zip",
-                                    mime="application/zip"
-                                )
-
+                                # Step 4: Provide a download link for the ZIP file
+                                with open(zip_filename, "rb") as f:
+                                    st.download_button(
+                                        label="Téléchargez vos photos!",
+                                        data=f,
+                                        file_name="extracted_images.zip",
+                                        mime="application/zip"
+                                    )
 
 
 
