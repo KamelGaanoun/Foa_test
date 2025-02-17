@@ -12,6 +12,8 @@ import openpyxl as px
 import streamlit as st
 import zipfile
 
+from regEx import extract_info
+
 # # Paths to the files
 # image_path = "D:\Kamel\IA_Projects\FOA_Builder\saved_images\AXTD_FI-48092-0005_PA-48092-000C_MADSITE/image_214_0_CH_FT_341_L1T.png"  # Path to the saved image
 # file_path = "00_C16.xlsx"  # Path to the Excel file where the image will be inserted
@@ -209,7 +211,7 @@ def foa_feeder(db, template_file,command, pil_images,output_dr):
             
 
             img_emplcmnt = entry['metadata']['Emplacement']
-            if img_emplcmnt != "CHAMBRE FTTH":
+            if img_emplcmnt.lower() != "chambre ftth":
                 continue  
             
             # Reload the workbook from the template for each entry
@@ -222,9 +224,12 @@ def foa_feeder(db, template_file,command, pil_images,output_dr):
             # Extract metadata
             img_planche = entry['metadata']['planche']
             img_address = entry['metadata']['Adresse']
-            img_chambre = entry['metadata']['Site Support'].split(" ")[1]
-            img_type = entry['metadata']['Site Support'].split(" ")[2]
+            img_chambre,img_type = extract_info(entry['metadata']['Site Support'])
+                       
+            # img_chambre = entry['metadata']['Site Support'].split(" ")[1]
+            # img_type = entry['metadata']['Site Support'].split(" ")[2]
             img_supp = entry['metadata']['Site Support']
+
 
             images = entry['images']
 
