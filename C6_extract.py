@@ -8,6 +8,7 @@ import streamlit as st
 from collections import defaultdict
 import re
 import zipfile
+import shutil
 
 # Function to resize photos to a fixed size
 # def resize_photo(image_data, target_width_cm, target_height_cm):
@@ -326,7 +327,10 @@ def extract_images_with_correct_names(excel_file, output_folder):
     wb = openpyxl.load_workbook(excel_file)
     sheet = wb["Photos"]  # Use the active sheet or specify another one
 
-    os.makedirs(output_folder, exist_ok=True)  # Ensure the output folder exists
+
+    if os.path.exists(output_folder):
+        shutil.rmtree(output_folder)
+    os.makedirs(output_folder, exist_ok=True)
 
     # Step 1: Extract all images and their positions
     image_positions = []
