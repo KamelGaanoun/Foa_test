@@ -340,11 +340,13 @@ def main():
     
     elif app == "Annexe C6":
 
+
+        
          # Create Tabs for Extraction and Insertion
         extra_tab,inser_tab= st.tabs(["🔍 Extraction", "📝 Insertion"])
 
         with extra_tab:
-            st.subheader("🔍 Extraction Module")
+            st.subheader("🔍 Extraction")
         
 
             #st.markdown(f'<h1 style="color:#ffa500;font-size:44px;">{"Annexe C6"}</h1>', unsafe_allow_html=True)
@@ -419,7 +421,7 @@ def main():
 
 
         with inser_tab:
-            st.subheader("📝 Insertion Module")
+            st.subheader("📝 Insertion")
             
             # Step 2: User uploads the Excel file
             uploaded_file = st.file_uploader("Téléchargez le fichier Excel", type=["xlsx"])
