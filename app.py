@@ -251,13 +251,15 @@ def main():
                                     
                                     # Flatten PB_Data and Address_data into a single dictionary
                                     flattened_data.update({
-                                        key.replace(":", "").strip(): value.strip()
+                                        key.replace(":", "").strip(): value.strip() if value is not None else ""
                                         for key, value in zip(PB_data[::2], PB_data[1::2])
+                                        if key is not None
                                     })
                                     flattened_data.update({
-                                        key.replace(":", "").strip(): value.strip()
+                                        key.replace(":", "").strip(): value.strip() if value is not None else ""
                                         for key, value in zip(Address_data[::2], Address_data[1::2])
-                                    })
+                                        if key is not None
+                                })
 
                                     image_database.append(flattened_data)
 
