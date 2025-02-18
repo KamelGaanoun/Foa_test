@@ -212,7 +212,9 @@ def main():
                                             for c in range(1, sheet.max_column + 1)
                                         ]
 
-                                        
+                                    if all(x is None for x in Address_data):
+                                        print(f"Skipping entry {idx}: All elements are None")
+                                        continue    
                                         #st.write(f"Textual Information (Row {row - 3}):", PB_data)
                                         #st.write(f"Textual Information (Row {row }):", Address_data)
                                     
