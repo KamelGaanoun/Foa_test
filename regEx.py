@@ -23,7 +23,7 @@ def get_planche_number(text):
 def extract_info(text):
     # Regex patterns
     chambre_pattern = re.compile(r'(\d+)(?:\/\d+)?')  # Matches any number of digits chamber number, optionally followed by / and more digits
-    type_pattern = re.compile(r'([A-Za-z]\d[A-Za-z])')  # Matches chamber type (any letter, digit, letter)
+    type_pattern = re.compile(r'([A-Za-z]\d[A-Za-z]?)')  # Matches chamber type (any letter, digit, letter)
 
     chambre_match = chambre_pattern.search(text)
     type_match = type_pattern.search(text)
