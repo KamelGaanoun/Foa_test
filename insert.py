@@ -181,10 +181,36 @@ from regEx import extract_info
 
 
 
+def get_unique_filename(base_filename, directory):
+    """
+    Generate a unique filename by adding a suffix if the file already exists.
+    """
+    name, ext = os.path.splitext(base_filename)  # Split filename and extension
+    counter = 1  # Start suffix counter
+    unique_filename = base_filename  # Initialize with the original filename
 
+    # Check if the file already exists
+    while os.path.exists(os.path.join(directory, unique_filename)):
+        unique_filename = f"{name}_{counter}{ext}"  # Add suffix
+        counter += 1  # Increment suffix
+
+    return unique_filename
 
 def foa_feeder(db, template_file,command, pil_images,output_dr):
     
+    # Check if any entry in the database has "chambre ftth" or "chambre m1c"
+    has_valid_chambre = any(
+        entry["metadata"]["Emplacement"].lower() in ["chambre ftth", "chambre m1c"]
+        for entry in db
+    )
+
+    # If no valid chambre is found, throw a message and return
+    if not has_valid_chambre:
+        print("Aucune chambre identifiée dans le fichier")
+        st.info("Aucune chambre identifiée dans le fichier")
+        return  # Exit the function early
+
+
     target_sheet_name = "CH"  # Name of the target sheet
 
     # Predefined locations and sizes for each image
@@ -208,10 +234,11 @@ def foa_feeder(db, template_file,command, pil_images,output_dr):
     temp_image_paths = []
     for entry in db:
         try:
+            entry["images"] = sorted(entry["images"], key=lambda x: x["id"])
             
 
             img_emplcmnt = entry['metadata']['Emplacement']
-            if img_emplcmnt.lower() != "chambre ftth":
+            if img_emplcmnt.lower() not in ["chambre ftth", "chambre m1c"]:
                 continue  
             
             # Reload the workbook from the template for each entry
@@ -256,8 +283,15 @@ def foa_feeder(db, template_file,command, pil_images,output_dr):
             
             #output_file = f"{output_dr}\{img_chambre}_C16_updated.xlsx"
             #output_file = os.path.join(outputs_directory, f"{img_chambre}_C16.xlsx") #Desktop
-            output_file = os.path.join(outputs_directory, f"{img_chambre}_C16.xlsx") #to work in any OS
+            # Generate the base filename
+            base_filename = f"{img_chambre}_C16.xlsx"
+            # Get a unique filename
+            unique_filename = get_unique_filename(base_filename, outputs_directory)
+            # Save the file with the unique filename
+            output_file = os.path.join(outputs_directory, unique_filename)
+            #output_file = os.path.join(outputs_directory, f"{img_chambre}_C16.xlsx") #to work in any OS
 
+            
             # Insert each image based on predefined positions and sizes
             for idx, pil_image in enumerate(current_pil_images):
                 if idx >= len(image_positions):

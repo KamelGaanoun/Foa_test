@@ -183,6 +183,9 @@ def main():
                                 # Dictionary to store PIL images in memory with unique IDs
                                 image_memory = {}
 
+
+
+                                
                                 for idx, (row, col, image) in enumerate(images_with_positions):
                                     
                                     #Track col number, as some photos are in the same col so we have to increment
@@ -191,6 +194,18 @@ def main():
                                         col_number+=1
                                     else:
                                         col_number=col
+
+
+                                    # Calculate the correct Address and PB rows
+                                    address_row = ((row - 1) // 30) * 30 + 4  # Nearest Address row (4,34,64...)
+                                    pb_row = address_row - 3  # Corresponding PB row (1,31,61...)
+
+                                    # Validate rows
+                                    if pb_row < 1 or address_row > sheet.max_row:
+                                        print(f"Skipping image at row {row}: Invalid PB or Address row")
+                                        continue
+
+
                                     # Extract the binary content of the image
                                     img_bytes = image.ref.getvalue()  # Get the image binary data
                                     
@@ -199,18 +214,29 @@ def main():
                                     
                                     
                                     
-
+                                    
                                     # Retrieve textual information 
-                                    if row > 1:  # Ensure the row exists (skip if it's the first row)
-                                        
-                                        PB_data = [
-                                            sheet.cell(row=row-3 , column=c).value
-                                            for c in range(1, sheet.max_column + 1)
-                                        ]
-                                        Address_data = [
-                                            sheet.cell(row=row , column=c).value
-                                            for c in range(1, sheet.max_column + 1)
-                                        ]
+                                    # if row > 1:  # Ensure the row exists (skip if it's the first row)
+                                    #     print(row)
+                                    #     PB_data = [
+                                    #         sheet.cell(row=row-3 , column=c).value
+                                    #         for c in range(1, sheet.max_column + 1)
+                                    #     ]
+                                    #     Address_data = [
+                                    #         sheet.cell(row=row , column=c).value
+                                    #         for c in range(1, sheet.max_column + 1)
+                                    #     ]
+
+                                    PB_data = [
+                                        sheet.cell(row=pb_row, column=c).value
+                                        for c in range(1, sheet.max_column + 1)
+                                    ]
+                                    
+                                    Address_data = [
+                                        sheet.cell(row=address_row, column=c).value
+                                        for c in range(1, sheet.max_column + 1)
+                                    ]
+                                    
 
                                     if all(x is None for x in Address_data):
                                         print(f"Skipping entry {idx}: All elements are None")
@@ -222,9 +248,10 @@ def main():
                                     # Save the image to the directory with a unique name based on row and column
                                     
                                     #Replace spaces(not convenient) and slashes(not allowed) with "_" as they are not allowed in file names
-                                    id_address=Address_data[3].replace(" ","_").replace("/","_").replace("\t","")
-                                    
-                                    img_title=f"image_{row}_{col_number}_{id_address}.png"
+                                    #id_address=Address_data[3].replace(" ","_").replace("/","_").replace("\t","")
+                                    id_address = Address_data[3].replace(" ", "_").replace("/", "_").replace("\t", "") if Address_data[3] else f"unknown_{idx}"
+                                    #img_title=f"image_{row}_{col_number}_{id_address}.png"
+                                    img_title = f"image_{address_row}_{col_number}_{id_address}.png"  # Changed row -> address_row
                                     img_filename = os.path.join(save_directory, img_title)
                                     
                                     
@@ -268,6 +295,9 @@ def main():
                                     #st.json(flattened_data)
                                 
                                 
+                                # After all images are processed, sort image_memory by img_title
+                                sorted_image_memory = {k: v for k, v in sorted(image_memory.items(), key=lambda item: item[0])}
+
                                 #Transform the db into a structure avoiding redundancy
                                 # Group entries by their unique metadata values
                                 grouped_db = {}
@@ -313,7 +343,7 @@ def main():
                                     #st.image(pil_image)
                                 
                                 #foa_feeder(new_db,"00_C16.xlsx",image_memory,outputs_directory)#desktop
-                                foa_feeder(new_db,"00_C16.xlsx",command_num,image_memory,base_filename)#web
+                                foa_feeder(new_db,"00_C16.xlsx",command_num,sorted_image_memory,base_filename)#web
                                 
                                 if "zip_ready" in st.session_state and st.session_state["zip_ready"]:
                                     zip_file_path = st.session_state["zip_file_path"]

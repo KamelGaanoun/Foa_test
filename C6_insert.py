@@ -7,6 +7,7 @@ from openpyxl.drawing.image import Image
 from openpyxl.utils import get_column_letter
 import io
 from PIL import Image as PILImage
+from PIL.Image import Resampling  # Import Resampling for compatibility
 
 
 def extract_photo_names_from_excel(excel_file):
@@ -45,6 +46,11 @@ def filter_photo_names(photo_names):
     return filtered_names
 
 
+###TO DO : take into account other photo types (png etc) for now it is onmy jpg here:
+###base_names = {re.sub(r"_\d+\.jpg$", "", name) for name in filtered_names}
+###Use get_photo_size_in_A2 to get the size dynamically, for now it is :
+###target_width_cm = 8.47  # Width in cm
+###target_height_cm = 10.58  # Height in cm
 
 def find_matching_photos(uploaded_photos, filtered_names):
     """Finds photos in the given folder that match filtered names and end with _3 or _4."""
@@ -91,7 +97,7 @@ def resize_photos_to_fixed_size(selected_photos, target_width_cm, target_height_
         # Open the image using PIL
         pil_img = PILImage.open(photo)
         # Resize the image to the target size
-        resized_img = pil_img.resize((target_width_px, target_height_px), PILImage.ANTIALIAS)
+        resized_img = pil_img.resize((target_width_px, target_height_px), Resampling.LANCZOS) #was PILImage.ANTIALIAS
         # Convert the resized image back to bytes
         img_bytes = io.BytesIO()
         resized_img.save(img_bytes, format="PNG")

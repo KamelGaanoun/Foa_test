@@ -55,7 +55,9 @@ def process_text(text):
 
 def extract_info(text):
     #pattern = re.compile(r'(?:CH_FT/?)?(?:([A-Za-z]\d[A-Za-z]?|[A-Za-z]\d)(?:[\s-]+(\d+)(?:\/\d+)?)?|(\d+)(?:\/\d+)?(?:\s+([A-Za-z]\d[A-Za-z]?|[A-Za-z]\d))?)')
-    pattern = re.compile(r'(?:CH_FT/?|CH/)?(?:([A-Za-z]\d[A-Za-z]?|[A-Za-z]\d|[A-Za-z]{2}\d)(?:[\s-]+(\d+)(?:\/\d+)?)?|(\d+)(?:\/\d+)?(?:\s+([A-Za-z]\d[A-Za-z]?|[A-Za-z]\d|[A-Za-z]{2}\d))?)')
+    #pattern = re.compile(r'(?:CH_FT/?|CH/)?(?:([A-Za-z]\d[A-Za-z]?|[A-Za-z]\d|[A-Za-z]{2}\d)(?:[\s-]+(\d+)(?:\/\d+)?)?|(\d+)(?:\/\d+)?(?:\s+([A-Za-z]\d[A-Za-z]?|[A-Za-z]\d|[A-Za-z]{2}\d))?)')
+    #pattern = re.compile(r'(?:CH_FT/?|CH/)?(?:([A-Za-z]\d[A-Za-z]?|[A-Za-z]\d|[A-Za-z]{2}\d)(?:[\s-]+(?:FT/)?(\d+)(?:\/\d+)?)?|(\d+)(?:\/\d+)?(?:\s+([A-Za-z]\d[A-Za-z]?|[A-Za-z]\d|[A-Za-z]{2}\d))?)')
+    pattern = re.compile(r'(?:([A-Za-z]\d[A-Za-z]?|[A-Za-z]\d|[A-Za-z]{2}\d)(?:[\s-]+(?:CH_FT/|FT/|CH/)?(\d+)(?:\/\d+)?)?|(?:CH_FT/|FT/|CH/)?(\d+)(?:\/\d+)?(?:\s+([A-Za-z]\d[A-Za-z]?|[A-Za-z]\d|[A-Za-z]{2}\d))?)')
 
     match = pattern.search(text)
     if match:
@@ -76,12 +78,12 @@ def extract_info(text):
 #     "326/54698",        # Should give ("326", None)
 #     "CH_FT/",           # Should give (None, None)
 #     "L2 CH_FT/",        # Should give (None, "L2")
-#     "CH/00326  DR3",     # Should give ("00326", "DR3")
-#     "CH/00003  K2C",     # Should give ("00003", "K2C")
+#     "CH/00326  DR3",    # Should give ("00326", "DR3")
+#     "L1T FT/206",       # Should give ("206", "L1T")
+#     "L2C CH_FT/476"     # Should give ("476", "L2C")
 # ]
 
 # for test in tests:
 #     chamber_num, type_code = extract_info(test)
 #     print(f"Text: {test}")
 #     print(f"Chamber: {chamber_num}, Type: {type_code}\n")
-
